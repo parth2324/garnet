@@ -233,7 +233,7 @@ bool LocalMemoryIoHandler::TryComplete() {
   return false;
 }
 
-int QueueIoHandler::QueueRun(int timeout_secs) {
+int LocalMemoryIoHandler::QueueRun(int timeout_secs) {
   return 0;
 }
 
@@ -250,7 +250,7 @@ Status LocalMemory::Delete() {
 }
 
 Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       QueueIoHandler* handler, bool* exists) {
+                       LocalMemoryIoHandler* handler, bool* exists) {
   if(exists) {
     *exists = false;
   }
@@ -261,7 +261,7 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) const {
   DCHECK_ALIGNMENT(offset, length, buffer);
   std::memcpy(buffer, segment_ptr + offset, length);
-  callback(context, Status::Ok, length);
+  callback(&context, Status::Ok, length);
   return Status::Ok;
 }
 
@@ -269,7 +269,7 @@ Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   DCHECK_ALIGNMENT(offset, length, buffer);
   std::memcpy(segment_ptr + offset, buffer, length);
-  callback(context, Status::Ok, length);
+  callback(&context, Status::Ok, length);
   return Status::Ok;
 }
 
