@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING 1;
+#define MEM_IDEV;   // Maybe not required here ?
 #include "file_system_disk.h"  
 
 class NativeDevice {
@@ -10,7 +11,11 @@ public:
     //typedef FASTER::environment::QueueIoHandler handler_t;
     typedef FASTER::environment::ThreadPoolIoHandler handler_t;
 #else
-    typedef FASTER::environment::QueueIoHandler handler_t;
+    #ifdef MEM_IDEV
+        typedef FASTER::environment::LocalMemoryIoHandler handler_t;
+    #else
+        typedef FASTER::environment::QueueIoHandler handler_t;
+    #endif
 #endif
     typedef FASTER::device::FileSystemSegmentedFile<handler_t, 1073741824L> log_file_t;
 
@@ -114,6 +119,7 @@ public:
     }
 
     void CreateDir(const std::string& dir) {
+        #ifndef MEM_IDEV
         std::experimental::filesystem::path path{ dir };
         try {
             std::experimental::filesystem::remove_all(path);
@@ -122,6 +128,7 @@ public:
             // Ignore; throws when path doesn't exist yet.
         }
         std::experimental::filesystem::create_directories(path);
+        #endif
     }
 
     /// Implementation-specific accessor.

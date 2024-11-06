@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define MEM_IDEV
+
 #include <atomic>
 #include <cstdint>
 #include <string>
@@ -10,6 +12,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#ifdef MEM_IDEV
+#include <stdexcept>
+#endif
 
 #ifdef FASTER_URING
 #include <liburing.h>
@@ -261,6 +267,111 @@ class QueueFile : public File {
 
   io_context_t io_object_;
 };
+
+#ifdef MEM_IDEV
+
+#define DEFAULT_MEMORY_SIZE_MB 16;
+class LocalMemory;
+
+class LocalMemoryIoHandler {
+  public:
+  typedef LocalMemory async_file_t;
+
+ public:
+  LocalMemoryIoHandler() {}
+  LocalMemoryIoHandler(size_t max_threads) {}
+  LocalMemoryIoHandler(LocalMemoryIoHandler&& other) {}
+  ~LocalMemoryIoHandler() {}
+
+  /// Try to execute the next IO completion on the queue, if any.
+  bool TryComplete();
+
+  // Process IO completions on queue with timeout
+  int QueueRun(int timeout_secs);
+}
+
+class LocalMemory {
+  public:
+  LocalMemory()
+    : virtfilename{ (std::string)"default_virtual_file" }
+    , capacity{ (uint64_t)(-1) }
+    , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    , sector_size{ 1 }
+    , segment_ptr{ nullptr } {
+      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+  }
+  LocalMemory(const std::string& virtfilename_)
+    : virtfilename{ virtfilename_ }
+    , capacity{ (uint64_t)(-1) }
+    , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    , sector_size{ 1 }
+    , segment_ptr{ nullptr } {
+      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+  }
+  LocalMemory(const std::string& virtfilename_, uint64_t segment_size_mb_)
+    : virtfilename{ virtfilename_ }
+    , capacity{ (uint64_t)(-1) }
+    , segment_size{ 1024 * 1024 * segment_size_mb_ }
+    , sector_size{ 1 }
+    , segment_ptr{ nullptr } {
+      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+  }
+  ~LocalMemory() {
+    if(segment_ptr){
+      std::free(segment_ptr);
+      segment_ptr = nullptr;
+    }
+  }
+  LocalMemory(LocalMemory&& other)
+    : virtfilename{ other.virtfilename }
+    , capacity{ other.capacity }
+    , segment_size{ other.segment_size }
+    , sector_size{ other.sector_size }
+    , segment_ptr{ other.segment_ptr } {
+  }
+  LocalMemory& operator=(LocalMemory&& other) {
+    virtfilename = other.virtfilename;
+    capacity = other.capacity;
+    segment_size = other.segment_size;
+    sector_size = other.sector_size;
+    segment_ptr = other.segment_ptr;
+    return *this;
+  }
+
+  uint64_t size() const {
+    return segment_size;
+  }
+
+  size_t device_alignment() const {
+    return 0;
+  }
+
+  const std::string& filename() const {
+    return virtfilename;
+  }
+
+  core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
+              QueueLocalMemoryIoHandler* handler, bool* exists = nullptr);
+
+  core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
+                    core::IAsyncContext& context, core::AsyncIOCallback callback) const;
+  core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
+                     core::IAsyncContext& context, core::AsyncIOCallback callback);
+  core::Status Delete();
+  core::Status Close();
+
+ private:
+  uint8_t* segment_ptr;
+
+ protected:
+  uint64_t capacity, segment_size, sector_size;
+  std::string virtfilename;
+}
+
+#endif
 
 #ifdef FASTER_URING
 

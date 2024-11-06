@@ -227,6 +227,54 @@ Status QueueFile::ScheduleOperation(FileOperationType operationType, uint8_t* bu
   return Status::Ok;
 }
 
+#ifdef MEM_IDEV
+
+bool LocalMemoryIoHandler::TryComplete() {
+  return false;
+}
+
+int QueueIoHandler::QueueRun(int timeout_secs) {
+  return 0;
+}
+
+Status LocalMemory::Close() {
+  return Status::Ok;
+}
+
+Status LocalMemory::Delete() {
+  if(segment_ptr){
+    std::free(segment_ptr);
+    segment_ptr = nullptr;
+  }
+  return core::Status::Ok;
+}
+
+Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOptions& options,
+                       QueueIoHandler* handler, bool* exists) {
+  if(exists) {
+    *exists = false;
+  }
+  return Status::Ok;
+}
+
+Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
+                       IAsyncContext& context, AsyncIOCallback callback) const {
+  DCHECK_ALIGNMENT(offset, length, buffer);
+  std::memcpy(buffer, segment_ptr + offset, length);
+  callback(context, Status::Ok, length);
+  return Status::Ok;
+}
+
+Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
+                        IAsyncContext& context, AsyncIOCallback callback) {
+  DCHECK_ALIGNMENT(offset, length, buffer);
+  std::memcpy(segment_ptr + offset, buffer, length);
+  callback(context, Status::Ok, length);
+  return Status::Ok;
+}
+
+#endif
+
 #ifdef FASTER_URING
 
 bool UringIoHandler::TryComplete() {
