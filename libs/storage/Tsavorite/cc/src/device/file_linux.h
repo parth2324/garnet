@@ -299,8 +299,8 @@ class LocalMemory {
     , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
-      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   }
   LocalMemory(const std::string& virtfilename_)
     : virtfilename{ virtfilename_ }
@@ -308,8 +308,8 @@ class LocalMemory {
     , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
-      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   }
   LocalMemory(const std::string& virtfilename_, uint64_t segment_size_mb_)
     : virtfilename{ virtfilename_ }
@@ -317,8 +317,8 @@ class LocalMemory {
     , segment_size{ 1024 * 1024 * segment_size_mb_ }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
-      segment_ptr = std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw runtime_error("local memory exhausted.");
+      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
+      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   }
   ~LocalMemory() {
     if(segment_ptr){
