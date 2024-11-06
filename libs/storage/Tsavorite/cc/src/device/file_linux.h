@@ -270,7 +270,8 @@ class QueueFile : public File {
 
 #ifdef MEM_IDEV
 
-#define DEFAULT_MEMORY_SIZE_MB 16;
+#define DEFAULT_MEMORY_SIZE_MB 16
+
 class LocalMemory;
 
 class LocalMemoryIoHandler {
@@ -288,7 +289,7 @@ class LocalMemoryIoHandler {
 
   // Process IO completions on queue with timeout
   int QueueRun(int timeout_secs);
-}
+};
 
 class LocalMemory {
   public:
@@ -354,8 +355,7 @@ class LocalMemory {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              QueueLocalMemoryIoHandler* handler, bool* exists = nullptr);
-
+              LocalMemoryIoHandler* handler, bool* exists = nullptr);
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
   core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
@@ -369,7 +369,7 @@ class LocalMemory {
  protected:
   uint64_t capacity, segment_size, sector_size;
   std::string virtfilename;
-}
+};
 
 #endif
 
