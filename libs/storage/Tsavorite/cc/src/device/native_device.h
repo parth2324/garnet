@@ -85,7 +85,7 @@ public:
 
     FASTER::core::Status ReadAsync(uint64_t source, void* dest, uint32_t length, FASTER::core::AsyncIOCallback callback, void* context) {
         AsyncIoContext io_context{ context, callback };
-        std::cout << "reading from native device.\n";
+        // std::cout << "reading from native device.\n";
         auto callback_ = [](FASTER::core::IAsyncContext* ctxt, FASTER::core::Status result, size_t bytes_transferred) {
             FASTER::core::CallbackContext<AsyncIoContext> context{ ctxt };
             context->callback((FASTER::core::IAsyncContext*)context->context, result, bytes_transferred);
@@ -100,7 +100,7 @@ public:
 
     FASTER::core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length, FASTER::core::AsyncIOCallback callback, void* context) {
         AsyncIoContext io_context{ context, callback };
-        std::cout << "writing to native device.\n";
+        // std::cout << "writing to native device.\n";
         auto callback_ = [](FASTER::core::IAsyncContext* ctxt, FASTER::core::Status result, size_t bytes_transferred) {
             FASTER::core::CallbackContext<AsyncIoContext> context{ ctxt };
             context->callback((FASTER::core::IAsyncContext*)context->context, result, bytes_transferred);
