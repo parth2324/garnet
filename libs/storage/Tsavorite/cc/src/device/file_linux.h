@@ -347,7 +347,7 @@ class LocalMemory {
   }
 
   size_t device_alignment() const {
-    return 0;
+    return 1;
   }
 
   const std::string& filename() const {
