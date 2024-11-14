@@ -81,7 +81,7 @@ class FileSystemFile {
   }
   core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length,
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
-    std::cout << "A7 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
+    std::cout << "A7 writing at offset " << " size " << length << "\n";
     return file_.Write(dest, length, reinterpret_cast<const uint8_t*>(source), context, callback);
   }
 
