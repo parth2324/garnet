@@ -9,7 +9,7 @@
 #include <libgen.h>
 #include <stdio.h>
 #include <time.h>
-#include <iostream.h>
+#include <iostream>
 #include "file_linux.h"
 
 namespace FASTER {
