@@ -314,16 +314,21 @@ class FileSystemSegmentedFile {
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
     uint64_t segment = dest / kSegmentSize;
     assert(dest % kSegmentSize + length <= kSegmentSize);
-
+    std::cout << "A1 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
     bundle_t* files = files_.load();
+    std::cout << "A2 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
 
     if(!files || !files->exists(segment)) {
+      std::cout << "A3 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       core::Status result = OpenSegment(segment);
+      std::cout << "A4 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       if(result != core::Status::Ok) {
         return result;
       }
+      std::cout << "A5 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       files = files_.load();
     }
+    std::cout << "A6 writing at offset " << dest % kSegmentSize << " size " << length << "\n"; 
     return files->file(segment).WriteAsync(source, dest % kSegmentSize, length, callback, context);
   }
 
