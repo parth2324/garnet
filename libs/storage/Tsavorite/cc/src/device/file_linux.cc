@@ -275,7 +275,7 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
 Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   std::cout << "A8 writing " <<  length << " at " << offset << " to memory" << " :-\n";
-  std::cout << reinterpret_cast<uintptr_t>(buffer) << " - " << "\n";
+  std::cout << reinterpret_cast<uintptr_t>(buffer) << " - " << reinterpret_cast<uint64_t>(buffer) << "\n";
   DCHECK_ALIGNMENT(offset, length, buffer);
   std::cout << "A9 writing " <<  length << " at " << offset << " to memory\n";
   std::memcpy(segment_ptr + offset, buffer, length);
