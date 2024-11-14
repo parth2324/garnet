@@ -27,7 +27,6 @@ do { \
 #else
 #define DCHECK_ALIGNMENT(o, l, b) do {} while(0)
 #endif
-#define devali device_alignment()
 
 Status File::Open(int flags, FileCreateDisposition create_disposition, bool* exists) {
   if(exists) {
@@ -276,7 +275,7 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
 Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   std::cout << "A8 writing " <<  length << " at " << offset << " to memory, device alignment " << devali << " :-\n";
-  std::cout << reinterpret_cast<uintptr_t>(buffer) % device_alignment() << " - " << (offset) % device_alignment() << " - " <<  (length) % device_alignment() << "\n";
+  std::cout << reinterpret_cast<uintptr_t>(buffer) << " - " << "\n";
   DCHECK_ALIGNMENT(offset, length, buffer);
   std::cout << "A9 writing " <<  length << " at " << offset << " to memory\n";
   std::memcpy(segment_ptr + offset, buffer, length);
