@@ -55,6 +55,8 @@ namespace Tsavorite.core
         static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
             IntPtr libHandle = IntPtr.Zero;
+            Console.WriteLine("IMPORT RESOLVER:");
+            Console.WriteLine(libraryName);
             if (libraryName == NativeLibraryName && NativeLibraryPath != null)
                 libHandle = NativeLibrary.Load(NativeLibraryPath);
             return libHandle;

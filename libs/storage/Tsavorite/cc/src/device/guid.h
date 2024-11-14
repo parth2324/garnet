@@ -65,7 +65,7 @@ class Guid {
   static Guid Parse(const std::string str) {
 #ifdef _WIN32
     GUID guid;
-    auto result = ::UuidFromString(reinterpret_cast<uint8_t*>(const_cast<char*>(str.c_str())),
+    auto result = ::UuidFromString(reinterpret_cast<uint16_t*>(const_cast<char*>(str.c_str())),
                                    &guid);
     assert(result == RPC_S_OK);
     return guid;
