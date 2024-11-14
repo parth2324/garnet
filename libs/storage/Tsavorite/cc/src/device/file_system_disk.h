@@ -7,7 +7,6 @@
 #include <experimental/filesystem>
 #include <mutex>
 #include <string>
-#include <iostream>
 
 #include "gc_state.h"
 #include "guid.h"
@@ -81,7 +80,6 @@ class FileSystemFile {
   }
   core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length,
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
-    std::cout << "A7 writing at offset " << " size " << length << "\n";
     return file_.Write(dest, length, reinterpret_cast<const uint8_t*>(source), context, callback);
   }
 
@@ -315,21 +313,15 @@ class FileSystemSegmentedFile {
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
     uint64_t segment = dest / kSegmentSize;
     assert(dest % kSegmentSize + length <= kSegmentSize);
-    std::cout << "A1 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
     bundle_t* files = files_.load();
-    std::cout << "A2 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
 
     if(!files || !files->exists(segment)) {
-      std::cout << "A3 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       core::Status result = OpenSegment(segment);
-      std::cout << "A4 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       if(result != core::Status::Ok) {
         return result;
       }
-      std::cout << "A5 writing at offset " << dest % kSegmentSize << " size " << length << "\n";
       files = files_.load();
     }
-    std::cout << "A6 writing at offset " << dest % kSegmentSize << " size " << length << "\n"; 
     return files->file(segment).WriteAsync(source, dest % kSegmentSize, length, callback, context);
   }
 
@@ -389,7 +381,6 @@ class FileSystemSegmentedFile {
 
     if(!files) {
       // First segment opened.
-      std::cout << "first segment, needs " << bundle_t::size(1) << " bytes.\n";
       void* buffer = std::malloc(bundle_t::size(1));
       bundle_t* new_files = new(buffer) bundle_t{ filename_, file_options_, handler_,
           segment, segment + 1 };
