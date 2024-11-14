@@ -270,7 +270,7 @@ class QueueFile : public File {
 
 #ifdef MEM_IDEV
 
-#define DEFAULT_MEMORY_SIZE_MB 16
+#define DEFAULT_MEMORY_SIZE_MB 1024
 
 class LocalMemory;
 
