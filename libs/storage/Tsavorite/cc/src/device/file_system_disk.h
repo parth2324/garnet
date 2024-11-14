@@ -313,7 +313,7 @@ class FileSystemSegmentedFile {
   core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length,
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
     uint64_t segment = dest / kSegmentSize;
-    cout << (dest % kSegmentSize + length) << "\n";
+    std::cout << (dest % kSegmentSize + length) << "\n";
     assert(dest % kSegmentSize + length <= kSegmentSize);
 
     bundle_t* files = files_.load();
