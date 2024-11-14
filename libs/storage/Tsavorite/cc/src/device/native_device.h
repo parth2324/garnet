@@ -17,7 +17,7 @@ public:
         typedef FASTER::environment::QueueIoHandler handler_t;
     #endif
 #endif
-    typedef FASTER::device::FileSystemSegmentedFile<handler_t, 64 * 1048576L> log_file_t;
+    typedef FASTER::device::FileSystemSegmentedFile<handler_t, 1 * 1073741824L> log_file_t;
 
 private:
     class AsyncIoContext : public FASTER::core::IAsyncContext {
