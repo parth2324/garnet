@@ -239,6 +239,10 @@ int LocalMemoryIoHandler::QueueRun(int timeout_secs) {
 }
 
 Status LocalMemory::Close() {
+  if(segment_ptr){
+    std::free(segment_ptr);
+    segment_ptr = nullptr;
+  }
   return Status::Ok;
 }
 

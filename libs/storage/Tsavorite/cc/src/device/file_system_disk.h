@@ -7,6 +7,7 @@
 #include <experimental/filesystem>
 #include <mutex>
 #include <string>
+#include <iostream>
 
 #include "gc_state.h"
 #include "guid.h"
@@ -382,6 +383,7 @@ class FileSystemSegmentedFile {
 
     if(!files) {
       // First segment opened.
+      std::cout << "first segment, needs " << bundle_t::size(1) << " bytes.\n";
       void* buffer = std::malloc(bundle_t::size(1));
       bundle_t* new_files = new(buffer) bundle_t{ filename_, file_options_, handler_,
           segment, segment + 1 };
