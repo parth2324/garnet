@@ -261,6 +261,7 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
   }
   segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
   if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
+  else segment_size = kSegmentSize;
   std::cout << "new segment open called\n";
   return Status::Ok;
 }

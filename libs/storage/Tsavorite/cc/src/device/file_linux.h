@@ -297,14 +297,14 @@ class LocalMemory {
   LocalMemory()
     : virtfilename{ (std::string)"default_virtual_file" }
     // , capacity{ (uint64_t)(-1) }
-    // , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    , segment_size{ 0 }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
   }
   LocalMemory(const std::string& virtfilename_)
     : virtfilename{ virtfilename_ }
     // , capacity{ (uint64_t)(-1) }
-    // , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    , segment_size{ 0 }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
       // segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
@@ -328,14 +328,14 @@ class LocalMemory {
   LocalMemory(LocalMemory&& other)
     : virtfilename{ other.virtfilename }
     // , capacity{ other.capacity }
-    // , segment_size{ other.segment_size }
+    , segment_size{ other.segment_size }
     , sector_size{ other.sector_size }
     , segment_ptr{ other.segment_ptr } {
   }
   LocalMemory& operator=(LocalMemory&& other) {
     virtfilename = other.virtfilename;
     // capacity = other.capacity;
-    // segment_size = other.segment_size;
+    segment_size = other.segment_size;
     sector_size = other.sector_size;
     segment_ptr = other.segment_ptr;
     return *this;
@@ -366,8 +366,8 @@ class LocalMemory {
   uint8_t* segment_ptr;
 
  protected:
-  // uint64_t capacity, segment_size;
-  uint64_t sector_size;
+  // uint64_t capacity;
+  uint64_t segment_size, sector_size;
   std::string virtfilename;
 };
 
