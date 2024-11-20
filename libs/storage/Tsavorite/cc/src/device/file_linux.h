@@ -100,7 +100,7 @@ class File {
 
  protected:
   core::Status Open(int flags, FileCreateDisposition create_disposition, 
-                bool* exists = nullptr, uint64_t kSegmentSize);
+                  uint64_t kSegmentSize, bool* exists = nullptr);
 
  public:
   core::Status Close();
@@ -255,7 +255,7 @@ class QueueFile : public File {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              QueueIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
+              QueueIoHandler* handler, uint64_t kSegmentSize, bool* exists = nullptr);
 
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
@@ -354,7 +354,7 @@ class LocalMemory {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              LocalMemoryIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
+              LocalMemoryIoHandler* handler, uint64_t kSegmentSize, bool* exists = nullptr);
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
   core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
@@ -506,7 +506,7 @@ class UringFile : public File {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              UringIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
+              UringIoHandler* handler, uint64_t kSegmentSize, bool* exists = nullptr);
 
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
               core::IAsyncContext& context, core::AsyncIOCallback callback) const;

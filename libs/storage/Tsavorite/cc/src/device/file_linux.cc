@@ -28,7 +28,7 @@ do { \
 #define DCHECK_ALIGNMENT(o, l, b) do {} while(0)
 #endif
 
-Status File::Open(int flags, FileCreateDisposition create_disposition, bool* exists, uint64_t kSegmentSize) {
+Status File::Open(int flags, FileCreateDisposition create_disposition, uint64_t kSegmentSize, bool* exists) {
   if(exists) {
     *exists = false;
   }
@@ -168,12 +168,12 @@ int QueueIoHandler::QueueRun(int timeout_secs) {
 }
 
 Status QueueFile::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       QueueIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
+                       QueueIoHandler* handler, uint64_t kSegmentSize, bool* exists) {
   int flags = 0;
   if(options.unbuffered) {
     flags |= O_DIRECT;
   }
-  RETURN_NOT_OK(File::Open(flags, create_disposition, exists, kSegmentSize));
+  RETURN_NOT_OK(File::Open(flags, create_disposition, kSegmentSize, exists));
   if(exists && !*exists) {
     return Status::Ok;
   }
@@ -255,7 +255,7 @@ Status LocalMemory::Delete() {
 }
 
 Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       LocalMemoryIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
+                       LocalMemoryIoHandler* handler, uint64_t kSegmentSize, bool* exists) {
   if(exists) {
     *exists = false;
   }
@@ -331,12 +331,12 @@ int UringIoHandler::QueueRun(int timeout_secs) {
 }
 
 Status UringFile::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       UringIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
+                       UringIoHandler* handler, uint64_t kSegmentSize, bool* exists) {
   int flags = 0;
   if(options.unbuffered) {
     flags |= O_DIRECT;
   }
-  RETURN_NOT_OK(File::Open(flags, create_disposition, exists, kSegmentSize));
+  RETURN_NOT_OK(File::Open(flags, create_disposition, kSegmentSize, exists));
   if(exists && !*exists) {
     return Status::Ok;
   }
