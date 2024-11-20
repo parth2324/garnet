@@ -460,8 +460,8 @@ class FileSystemSegmentedFile {
 
     // Make a copy of the list, excluding the files to be truncated.
     void* buffer = std::malloc(bundle_t::size(files->end_segment - new_begin_segment));
-    bundle_t* new_files = new(buffer) bundle_t{ handler_, new_begin_segment, files->end_segment,
-        *files };
+    bundle_t* new_files = new(buffer) bundle_t(handler_, new_begin_segment, files->end_segment,
+                                               *files, kSegmentSize);
     files_.store(new_files);
     // Delete the old list only after all threads have finished looking at it.
     Context context{ files, new_begin_segment, caller_callback };
