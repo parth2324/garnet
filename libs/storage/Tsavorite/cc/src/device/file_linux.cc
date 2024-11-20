@@ -262,14 +262,14 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
   segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
   if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   else segment_size = kSegmentSize;
-  std::cout << "new segment open called\n";
+  // std::cout << "new segment open called\n";
   return Status::Ok;
 }
 
 Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) const {
   DCHECK_ALIGNMENT(offset, length, buffer);
-  std::cout << "reading " <<  length << " at " << offset << " from memory\n";
+  // std::cout << "reading " <<  length << " at " << offset << " from memory\n";
   std::memcpy(buffer, segment_ptr + offset, length);
   callback(&context, Status::Ok, length);
   return Status::Ok;
@@ -278,7 +278,7 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
 Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   DCHECK_ALIGNMENT(offset, length, buffer);
-  std::cout << "writing " <<  length << " at " << offset << " to memory\n";
+  // std::cout << "writing " <<  length << " at " << offset << " to memory\n";
   std::memcpy(segment_ptr + offset, buffer, length);
   callback(&context, Status::Ok, length);
   return Status::Ok;
