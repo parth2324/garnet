@@ -99,7 +99,8 @@ class File {
   }
 
  protected:
-  core::Status Open(int flags, FileCreateDisposition create_disposition, bool* exists = nullptr);
+  core::Status Open(int flags, FileCreateDisposition create_disposition, 
+                bool* exists = nullptr, uint64_t kSegmentSize);
 
  public:
   core::Status Close();
@@ -254,7 +255,7 @@ class QueueFile : public File {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              QueueIoHandler* handler, bool* exists = nullptr);
+              QueueIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
 
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
@@ -270,7 +271,7 @@ class QueueFile : public File {
 
 #ifdef MEM_IDEV
 
-#define DEFAULT_MEMORY_SIZE_MB 1024
+// #define DEFAULT_MEMORY_SIZE_MB 1024
 
 class LocalMemory;
 
@@ -295,31 +296,29 @@ class LocalMemory {
   public:
   LocalMemory()
     : virtfilename{ (std::string)"default_virtual_file" }
-    , capacity{ (uint64_t)(-1) }
-    , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    // , capacity{ (uint64_t)(-1) }
+    // , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
-      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   }
   LocalMemory(const std::string& virtfilename_)
     : virtfilename{ virtfilename_ }
-    , capacity{ (uint64_t)(-1) }
-    , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
+    // , capacity{ (uint64_t)(-1) }
+    // , segment_size{ 1024 * 1024 * DEFAULT_MEMORY_SIZE_MB }
     , sector_size{ 1 }
     , segment_ptr{ nullptr } {
-      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
+      // segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
+      // if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   }
-  LocalMemory(const std::string& virtfilename_, uint64_t segment_size_mb_)
-    : virtfilename{ virtfilename_ }
-    , capacity{ (uint64_t)(-1) }
-    , segment_size{ 1024 * 1024 * segment_size_mb_ }
-    , sector_size{ 1 }
-    , segment_ptr{ nullptr } {
-      segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
-      if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
-  }
+  // LocalMemory(const std::string& virtfilename_, uint64_t segment_size_mb_)
+  //   : virtfilename{ virtfilename_ }
+  //    , capacity{ (uint64_t)(-1) }
+  //    , segment_size{ 1024 * 1024 * segment_size_mb_ }
+  //   , sector_size{ 1 }
+  //   , segment_ptr{ nullptr } {
+  //     segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
+  //     if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
+  // }
   ~LocalMemory() {
     if(segment_ptr){
       std::free(segment_ptr);
@@ -328,15 +327,15 @@ class LocalMemory {
   }
   LocalMemory(LocalMemory&& other)
     : virtfilename{ other.virtfilename }
-    , capacity{ other.capacity }
-    , segment_size{ other.segment_size }
+    // , capacity{ other.capacity }
+    // , segment_size{ other.segment_size }
     , sector_size{ other.sector_size }
     , segment_ptr{ other.segment_ptr } {
   }
   LocalMemory& operator=(LocalMemory&& other) {
     virtfilename = other.virtfilename;
-    capacity = other.capacity;
-    segment_size = other.segment_size;
+    // capacity = other.capacity;
+    // segment_size = other.segment_size;
     sector_size = other.sector_size;
     segment_ptr = other.segment_ptr;
     return *this;
@@ -355,7 +354,7 @@ class LocalMemory {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              LocalMemoryIoHandler* handler, bool* exists = nullptr);
+              LocalMemoryIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
   core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
@@ -367,7 +366,8 @@ class LocalMemory {
   uint8_t* segment_ptr;
 
  protected:
-  uint64_t capacity, segment_size, sector_size;
+  // uint64_t capacity, segment_size;
+  uint64_t sector_size;
   std::string virtfilename;
 };
 
@@ -506,7 +506,7 @@ class UringFile : public File {
   }
 
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
-              UringIoHandler* handler, bool* exists = nullptr);
+              UringIoHandler* handler, bool* exists = nullptr, uint64_t kSegmentSize);
 
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
               core::IAsyncContext& context, core::AsyncIOCallback callback) const;

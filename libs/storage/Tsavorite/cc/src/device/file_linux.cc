@@ -28,7 +28,7 @@ do { \
 #define DCHECK_ALIGNMENT(o, l, b) do {} while(0)
 #endif
 
-Status File::Open(int flags, FileCreateDisposition create_disposition, bool* exists) {
+Status File::Open(int flags, FileCreateDisposition create_disposition, bool* exists, uint64_t kSegmentSize) {
   if(exists) {
     *exists = false;
   }
@@ -168,12 +168,12 @@ int QueueIoHandler::QueueRun(int timeout_secs) {
 }
 
 Status QueueFile::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       QueueIoHandler* handler, bool* exists) {
+                       QueueIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
   int flags = 0;
   if(options.unbuffered) {
     flags |= O_DIRECT;
   }
-  RETURN_NOT_OK(File::Open(flags, create_disposition, exists));
+  RETURN_NOT_OK(File::Open(flags, create_disposition, exists, kSegmentSize));
   if(exists && !*exists) {
     return Status::Ok;
   }
@@ -255,10 +255,12 @@ Status LocalMemory::Delete() {
 }
 
 Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       LocalMemoryIoHandler* handler, bool* exists) {
+                       LocalMemoryIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
   if(exists) {
     *exists = false;
   }
+  segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
+  if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   std::cout << "new segment open called\n";
   return Status::Ok;
 }
@@ -329,12 +331,12 @@ int UringIoHandler::QueueRun(int timeout_secs) {
 }
 
 Status UringFile::Open(FileCreateDisposition create_disposition, const FileOptions& options,
-                       UringIoHandler* handler, bool* exists) {
+                       UringIoHandler* handler, bool* exists, uint64_t kSegmentSize) {
   int flags = 0;
   if(options.unbuffered) {
     flags |= O_DIRECT;
   }
-  RETURN_NOT_OK(File::Open(flags, create_disposition, exists));
+  RETURN_NOT_OK(File::Open(flags, create_disposition, exists, kSegmentSize));
   if(exists && !*exists) {
     return Status::Ok;
   }

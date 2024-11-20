@@ -52,9 +52,9 @@ class FileSystemFile {
     return *this;
   }
 
-  core::Status Open(handler_t* handler) {
+  core::Status Open(handler_t* handler, uint64_t kSegmentSize) {
     return file_.Open(FASTER::environment::FileCreateDisposition::OpenOrCreate, file_options_,
-                      handler, nullptr);
+                      handler, nullptr, kSegmentSize);
   }
   core::Status Close() {
     return file_.Close();
@@ -134,7 +134,7 @@ class FileSystemSegmentBundle {
 
   FileSystemSegmentBundle(const std::string& filename,
                           const environment::FileOptions& file_options, handler_t* handler,
-                          uint64_t begin_segment_, uint64_t end_segment_)
+                          uint64_t begin_segment_, uint64_t end_segment_, uint64_t kSegmentSize)
     : filename_{ filename }
     , file_options_{ file_options }
     , begin_segment{ begin_segment_ }
@@ -142,8 +142,8 @@ class FileSystemSegmentBundle {
     , owner_{ true } {
     for(uint64_t idx = begin_segment; idx < end_segment; ++idx) {
       new(files() + (idx - begin_segment)) file_t{ filename_ + "." + std::to_string(idx),
-          file_options_ };
-      core::Status result = file(idx).Open(handler);
+          file_options_, kSegmentSize };
+      core::Status result = file(idx).Open(handler, kSegmentSize);
       assert(result == core::Status::Ok);
     }
   }
@@ -165,7 +165,7 @@ class FileSystemSegmentBundle {
     for(uint64_t idx = begin_segment; idx < begin_copy; ++idx) {
       new(files() + (idx - begin_segment)) file_t{ filename_ + "." + std::to_string(idx),
           file_options_ };
-      core::Status result = file(idx).Open(handler);
+      core::Status result = file(idx).Open(handler, kSegmentSize);
       assert(result == core::Status::Ok);
     }
     for(uint64_t idx = begin_copy; idx < end_copy; ++idx) {
@@ -175,7 +175,7 @@ class FileSystemSegmentBundle {
     for(uint64_t idx = end_copy; idx < end_new; ++idx) {
       new(files() + (idx - begin_segment)) file_t{ filename_ + "." + std::to_string(idx),
           file_options_ };
-      core::Status result = file(idx).Open(handler);
+      core::Status result = file(idx).Open(handler, kSegmentSize);
       assert(result == core::Status::Ok);
     }
 
@@ -383,7 +383,7 @@ class FileSystemSegmentedFile {
       // First segment opened.
       void* buffer = std::malloc(bundle_t::size(1));
       bundle_t* new_files = new(buffer) bundle_t{ filename_, file_options_, handler_,
-          segment, segment + 1 };
+          segment, segment + 1, kSegmentSize };
       files_.store(new_files);
       return core::Status::Ok;
     }
