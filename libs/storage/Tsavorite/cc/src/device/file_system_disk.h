@@ -141,8 +141,7 @@ class FileSystemSegmentBundle {
     , end_segment{ end_segment_ }
     , owner_{ true } {
     for(uint64_t idx = begin_segment; idx < end_segment; ++idx) {
-      new(files() + (idx - begin_segment)) file_t{ filename_ + "." + std::to_string(idx),
-          file_options_, kSegmentSize };
+      new(files() + (idx - begin_segment)) file_t{ filename_ + "." + std::to_string(idx), file_options_ };
       core::Status result = file(idx).Open(handler, kSegmentSize);
       assert(result == core::Status::Ok);
     }
