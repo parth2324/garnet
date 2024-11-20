@@ -149,7 +149,7 @@ class FileSystemSegmentBundle {
   }
 
   FileSystemSegmentBundle(handler_t* handler, uint64_t begin_segment_, uint64_t end_segment_,
-                          bundle_t& other)
+                          bundle_t& other, uint64_t kSegmentSize)
     : filename_{ std::move(other.filename_) }
     , file_options_{ other.file_options_ }
     , begin_segment{ begin_segment_ }
