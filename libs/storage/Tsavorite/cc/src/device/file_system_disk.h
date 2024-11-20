@@ -54,7 +54,7 @@ class FileSystemFile {
 
   core::Status Open(handler_t* handler, uint64_t kSegmentSize) {
     return file_.Open(FASTER::environment::FileCreateDisposition::OpenOrCreate, file_options_,
-                      handler, nullptr, kSegmentSize);
+                      handler, kSegmentSize, nullptr);
   }
   core::Status Close() {
     return file_.Close();
