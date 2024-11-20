@@ -382,8 +382,8 @@ class FileSystemSegmentedFile {
     if(!files) {
       // First segment opened.
       void* buffer = std::malloc(bundle_t::size(1));
-      bundle_t* new_files = new(buffer) bundle_t{ filename_, file_options_, handler_,
-          segment, segment + 1, kSegmentSize };
+      bundle_t* new_files = new(buffer) bundle_t(filename_, file_options_, handler_,
+                                                segment, segment + 1, kSegmentSize);
       files_.store(new_files);
       return core::Status::Ok;
     }
