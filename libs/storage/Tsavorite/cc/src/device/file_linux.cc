@@ -285,6 +285,7 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
     *exists = false;
   }
   // std::cout << "segment open called\n";
+  std::cout << "segment open called for seg size " << kSegmentSize << "\n";
   if(segment_ptr) return Status::IOError;
   segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
   if(!segment_ptr){
