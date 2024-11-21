@@ -334,6 +334,8 @@ class LocalMemory {
     // , capacity{ other.capacity }
     , segment_size{ other.segment_size }
     , sector_size{ other.sector_size }
+    , num_r { other.num_r }
+    , num_w { other.num_w }
     , segment_ptr{ other.segment_ptr } {
   }
   LocalMemory& operator=(LocalMemory&& other) {
@@ -342,6 +344,8 @@ class LocalMemory {
     segment_size = other.segment_size;
     sector_size = other.sector_size;
     segment_ptr = other.segment_ptr;
+    num_r = other.num_r;
+    num_w = other.num_w;
     return *this;
   }
 
