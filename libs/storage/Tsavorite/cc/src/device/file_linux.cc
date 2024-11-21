@@ -231,11 +231,11 @@ Status QueueFile::ScheduleOperation(FileOperationType operationType, uint8_t* bu
 #ifdef MEM_IDEV
 
 bool LocalMemoryIoHandler::TryComplete() {
-  return true;   // try true
+  return false;
 }
 
 int LocalMemoryIoHandler::QueueRun(int timeout_secs) {
-  return 100;       // try returning number of proceesed so far
+  return 0;
 }
 
 Status LocalMemory::Close() {
