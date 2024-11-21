@@ -248,6 +248,23 @@ Status LocalMemory::Close() {
   return Status::Ok;
 }
 
+Status LocalMemory::ResizeSegment(uint64_t _segment_size){
+  std::cout << "segment resize called\n";
+  if(!segment_ptr) return Status::Ok;
+  uint8_t* new_seg_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * _segment_size);
+  if(!new_seg_ptr){
+    std::cout << "ERR: local memory exhausted.";
+    return Status::IOError;
+  }
+  // assumes resize is only for increase.
+  std::memcpy(new_seg_ptr, segment_ptr, segment_size);
+  std::free(segment_ptr);
+  segment_ptr = new_seg_ptr;
+  segment_size = _segment_size;
+  std::cout << "resize success\n";
+  return Status::Ok;
+}
+
 Status LocalMemory::Delete() {
   std::cout << "segment delete called\n";
   if(segment_ptr){
@@ -263,12 +280,15 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
   if(exists) {
     *exists = false;
   }
-  std::cout << "segment open called\n";
+  // std::cout << "segment open called\n";
   if(segment_ptr) return Status::IOError;
   segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
-  if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
+  if(!segment_ptr){
+    std::cout << "ERR: local memory exhausted.";
+    return Status::IOError;
+  }
   else segment_size = kSegmentSize;
-  std::cout << "open success\n";
+  // std::cout << "open success\n";
   return Status::Ok;
 }
 

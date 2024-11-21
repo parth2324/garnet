@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING 1;
-#define MEMORY_PER_SEGMENT_SIZE_MB 1024
+#define MEMORY_PER_SEGMENT_SIZE_MB 256
 #include <iostream>
 #include "file_system_disk.h"  
 
@@ -151,6 +151,14 @@ public:
         FASTER::core::Thread::acquire_id();
         epoch_.ProtectAndDrain();
         log_.RemoveSegment(segment);
+        epoch_.Unprotect();
+        FASTER::core::Thread::release_id();
+    }
+
+    void ResizeSegment(uint64_t segment_size) {
+        FASTER::core::Thread::acquire_id();
+        epoch_.ProtectAndDrain();
+        log_.ResizeSegments(segment_size);
         epoch_.Unprotect();
         FASTER::core::Thread::release_id();
     }

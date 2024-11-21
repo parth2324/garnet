@@ -100,6 +100,9 @@ namespace Tsavorite.core
 
         [DllImport(NativeLibraryName, EntryPoint = "NativeDevice_RemoveSegment", CallingConvention = CallingConvention.Cdecl)]
         static extern void NativeDevice_RemoveSegment(IntPtr device, ulong segment);
+
+        [DllImport(NativeLibraryName, EntryPoint = "NativeDevice_ResizeSegment", CallingConvention = CallingConvention.Cdecl)]
+        static extern void NativeDevice_ResizeSegment(IntPtr device, ulong segment_size);
         #endregion
 
         readonly AsyncIOCallback _callbackDelegate;
@@ -177,7 +180,8 @@ namespace Tsavorite.core
             if (segmentSize > (1L << nativeSegmentSizeBits))
                 throw new TsavoriteException("Native storage device does not support segment sizes greater than 1GB");
             Console.WriteLine("NATIVE STORAGE DEVICE INIT:");
-            Console.WriteLine(FileName, StartSegment, EndSegment, SegmentSize, Capacity);
+            Console.WriteLine(FileName, segmentSize);
+            NativeDevice_ResizeSegment(nativeDevice, segmentSize);
             base.Initialize(segmentSize, epoch, omitSegmentIdFromFilename);
         }
 

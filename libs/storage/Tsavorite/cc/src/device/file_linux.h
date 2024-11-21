@@ -261,6 +261,7 @@ class QueueFile : public File {
                     core::IAsyncContext& context, core::AsyncIOCallback callback) const;
   core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
                      core::IAsyncContext& context, core::AsyncIOCallback callback);
+  core::Status ResizeSegment(uint64_t _segment_size) {};
 
  private:
   core::Status ScheduleOperation(FileOperationType operationType, uint8_t* buffer, size_t offset,
@@ -369,6 +370,7 @@ class LocalMemory {
                      core::IAsyncContext& context, core::AsyncIOCallback callback);
   core::Status Delete();
   core::Status Close();
+  core::Status ResizeSegment(uint64_t _segment_size);
 
  private:
   uint8_t* segment_ptr;

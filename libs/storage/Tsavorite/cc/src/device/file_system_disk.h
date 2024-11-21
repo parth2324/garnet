@@ -76,6 +76,10 @@ class FileSystemFile {
     }
   }
 
+  void ResizeSegment(uint64_t segment_size) {
+    file_.ResizeSegment(segment_size);
+  }
+
   core::Status ReadAsync(uint64_t source, void* dest, uint32_t length,
                    core::AsyncIOCallback callback, core::IAsyncContext& context) {
     return file_.Read(source, length, reinterpret_cast<uint8_t*>(dest), context, callback);
@@ -286,6 +290,53 @@ class FileSystemSegmentedFile {
       auto truncate_callback = [](uint64_t offset) {
           };
       TruncateSegments(segment + 1, truncate_callback);
+  }
+  void ResizeSegments(uint64_t segment_size) {
+    class Context : public core::IAsyncContext {
+    public:
+        Context(bundle_t* files_)
+            : files{ files_ } {
+        }
+        /// The deep-copy constructor.
+        Context(const Context& other)
+            : files{ other.files } {
+        }
+    protected:
+        core::Status DeepCopy_Internal(core::IAsyncContext*& context_copy) final {
+            return core::IAsyncContext::DeepCopy_Internal(*this, context_copy);
+        }
+    public:
+        bundle_t* files;
+    };
+
+    kSegmentSize = segment_size;
+    auto callback = [](core::IAsyncContext* ctxt) {
+        core::CallbackContext<Context> context{ ctxt };
+        for (uint64_t idx = context->files->begin_segment; idx < context->files->end_segment; ++idx) {
+            file_t& file = context->files->file(idx);
+            file.ResizeSegment()
+        }
+        std::free(context->files);
+        };
+
+    // Only one thread can modify the list of files at a given time.
+    ReleasableLockGuard lock{ &mutex_ };
+    bundle_t* files = files_.load();
+    if (!files) {
+        return;
+    }
+
+    // Ensure all threads have finished looking at it.
+    Context context{ files };
+    core::IAsyncContext* context_copy;
+    core::Status result = context.DeepCopy(context_copy);
+    assert(result == core::Status::Ok);
+    // unlock the lock before calling BumpCurrentEpoch(),
+    // which may call completion callbacks which call this function again,
+    // resulting in self-deadlock.
+    //
+    lock.Unlock();
+    epoch_->BumpCurrentEpoch(callback, context_copy);
   }
   void Truncate(uint64_t new_begin_offset, core::GcState::truncate_callback_t callback) {
     uint64_t new_begin_segment = new_begin_offset / kSegmentSize;

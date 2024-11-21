@@ -54,4 +54,8 @@ extern "C" {
 	EXPORTED_SYMBOL void NativeDevice_RemoveSegment(NativeDevice* device, uint64_t segment) {
 		device->RemoveSegment(segment);
 	}
+
+	EXPORTED_SYMBOL void NativeDevice_ResizeSegment(NativeDevice* device, uint64_t segment_size) {
+		device->ResizeSegment(segment_size);
+	}
 }
