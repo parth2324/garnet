@@ -235,7 +235,7 @@ bool LocalMemoryIoHandler::TryComplete() {
 }
 
 int LocalMemoryIoHandler::QueueRun(int timeout_secs) {
-  return 0;       // try returning number of proceesed so far
+  return 100;       // try returning number of proceesed so far
 }
 
 Status LocalMemory::Close() {
