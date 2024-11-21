@@ -291,7 +291,7 @@ class FileSystemSegmentedFile {
           };
       TruncateSegments(segment + 1, truncate_callback);
   }
-  void ResizeSegments(const uint64_t segment_size) {
+  void ResizeSegments(uint64_t segment_size) {
     class Context : public core::IAsyncContext {
     public:
         Context(bundle_t* files_)
@@ -310,7 +310,7 @@ class FileSystemSegmentedFile {
     };
 
     kSegmentSize = segment_size;
-    auto callback = [](core::IAsyncContext* ctxt) {
+    auto callback = [segment_size](core::IAsyncContext* ctxt) {
         core::CallbackContext<Context> context{ ctxt };
         for (uint64_t idx = context->files->begin_segment; idx < context->files->end_segment; ++idx) {
             file_t& file = context->files->file(idx);
