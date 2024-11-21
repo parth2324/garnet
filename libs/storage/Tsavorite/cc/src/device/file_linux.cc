@@ -182,6 +182,10 @@ Status QueueFile::Open(FileCreateDisposition create_disposition, const FileOptio
   return Status::Ok;
 }
 
+Status QueueFile::ResizeSegment(uint64_t _segment_size){
+  return Status::Ok;
+}
+
 Status QueueFile::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) const {
   DCHECK_ALIGNMENT(offset, length, buffer);

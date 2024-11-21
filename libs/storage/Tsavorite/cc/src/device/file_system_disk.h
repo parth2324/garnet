@@ -252,7 +252,7 @@ class FileSystemSegmentedFile {
   typedef FileSystemFile<H> file_t;
   typedef FileSystemSegmentBundle<handler_t> bundle_t;
 
-  static uint64_t kSegmentSize = S;
+  uint64_t kSegmentSize = S;
   static_assert(core::Utility::IsPowerOfTwo(S), "template parameter S is not a power of two!");
 
   FileSystemSegmentedFile(const std::string& filename,
