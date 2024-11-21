@@ -272,9 +272,18 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
   num_r += (uint64_t)length;
   std::cout << "reading " <<  length << " at " << offset << " from memory\n";
   // std::cout << "total reads in bytes: " <<  num_r << "\n";
-  void* dst = std::memmove(buffer, segment_ptr + offset, length);
-  if(dst != buffer) std::cout << "DIDNT MATCH\n";
+  try {
+  std::memcpy(buffer, segment_ptr + offset, length);
+  } catch (const exception& e1) {
+        // print the exception
+        cout << "MEM Exception " << e1.what() << "\n";
+    }
+  try{
   callback(&context, Status::Ok, length);
+  } catch (const exception& e2) {
+        // print the exception
+        cout << "CALL Exception " << e2.what() << "\n";
+    }
   return Status::Ok;
 }
 
@@ -284,8 +293,7 @@ Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
   num_w += (uint64_t)length;
   // std::cout << "writing " <<  length << " at " << offset << " to memory\n";
   // std::cout << "total writes in bytes: " <<  num_w << "\n";
-  void* dst = std::memmove(segment_ptr + offset, buffer, length);
-  if(dst != (segment_ptr + offset)) std::cout << "DIDNT MATCH\n";
+  std::memcpy(segment_ptr + offset, buffer, length);
   callback(&context, Status::Ok, length);
   return Status::Ok;
 }
