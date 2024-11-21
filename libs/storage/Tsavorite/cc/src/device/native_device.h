@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING 1;
-#define MEMORY_PER_SEGMENT_SIZE_MB 256
 #include <iostream>
 #include "file_system_disk.h"  
 
@@ -18,7 +17,7 @@ public:
         typedef FASTER::environment::QueueIoHandler handler_t;
     #endif
 #endif
-    typedef FASTER::device::FileSystemSegmentedFile<handler_t, MEMORY_PER_SEGMENT_SIZE_MB * 1048576L> log_file_t;
+    typedef FASTER::device::FileSystemSegmentedFile<handler_t> log_file_t;
 
 private:
     class AsyncIoContext : public FASTER::core::IAsyncContext {

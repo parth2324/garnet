@@ -245,15 +245,17 @@ class FileSystemSegmentBundle {
   bool owner_;
 };
 
-template <class H, uint64_t S>
+#define MEMORY_PER_SEGMENT_SIZE_MB 256
+static uint64_t SEGMENT_SIZE = MEMORY_PER_SEGMENT_SIZE_MB * 1048576L;
+
+template <class H>
 class FileSystemSegmentedFile {
  public:
   typedef H handler_t;
   typedef FileSystemFile<H> file_t;
   typedef FileSystemSegmentBundle<handler_t> bundle_t;
 
-  uint64_t kSegmentSize = S;
-  static_assert(core::Utility::IsPowerOfTwo(S), "template parameter S is not a power of two!");
+  static_assert(core::Utility::IsPowerOfTwo(SEGMENT_SIZE), "template parameter S is not a power of two!");
 
   FileSystemSegmentedFile(const std::string& filename,
                           const environment::FileOptions& file_options, core::LightEpoch* epoch)
@@ -309,12 +311,12 @@ class FileSystemSegmentedFile {
         bundle_t* files;
     };
 
-    kSegmentSize = segment_size;
-    auto callback = [segment_size](core::IAsyncContext* ctxt) {
+    SEGMENT_SIZE = segment_size;
+    auto callback = [](core::IAsyncContext* ctxt) {
         core::CallbackContext<Context> context{ ctxt };
         for (uint64_t idx = context->files->begin_segment; idx < context->files->end_segment; ++idx) {
             file_t& file = context->files->file(idx);
-            file.ResizeSegment(segment_size);
+            file.ResizeSegment(SEGMENT_SIZE);
         }
         std::free(context->files);
         };
@@ -339,16 +341,16 @@ class FileSystemSegmentedFile {
     epoch_->BumpCurrentEpoch(callback, context_copy);
   }
   void Truncate(uint64_t new_begin_offset, core::GcState::truncate_callback_t callback) {
-    uint64_t new_begin_segment = new_begin_offset / kSegmentSize;
+    uint64_t new_begin_segment = new_begin_offset / SEGMENT_SIZE;
     begin_segment_ = new_begin_segment;
     TruncateSegments(new_begin_segment, callback);
   }
 
   core::Status ReadAsync(uint64_t source, void* dest, uint32_t length, core::AsyncIOCallback callback,
                    core::IAsyncContext& context) const {
-    uint64_t segment = source / kSegmentSize;
-    // std::cout << source % kSegmentSize << " " << length << " " << kSegmentSize << "\n";
-    assert(source % kSegmentSize + length <= kSegmentSize);
+    uint64_t segment = source / SEGMENT_SIZE;
+    // std::cout << source % SEGMENT_SIZE << " " << length << " " << SEGMENT_SIZE << "\n";
+    assert(source % SEGMENT_SIZE + length <= SEGMENT_SIZE);
 
     bundle_t* files = files_.load();
 
@@ -359,13 +361,13 @@ class FileSystemSegmentedFile {
       }
       files = files_.load();
     }
-    return files->file(segment).ReadAsync(source % kSegmentSize, dest, length, callback, context);
+    return files->file(segment).ReadAsync(source % SEGMENT_SIZE, dest, length, callback, context);
   }
 
   core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length,
                     core::AsyncIOCallback callback, core::IAsyncContext& context) {
-    uint64_t segment = dest / kSegmentSize;
-    assert(dest % kSegmentSize + length <= kSegmentSize);
+    uint64_t segment = dest / SEGMENT_SIZE;
+    assert(dest % SEGMENT_SIZE + length <= SEGMENT_SIZE);
     bundle_t* files = files_.load();
 
     if(!files || !files->exists(segment)) {
@@ -375,7 +377,7 @@ class FileSystemSegmentedFile {
       }
       files = files_.load();
     }
-    return files->file(segment).WriteAsync(source, dest % kSegmentSize, length, callback, context);
+    return files->file(segment).WriteAsync(source, dest % SEGMENT_SIZE, length, callback, context);
   }
 
   size_t alignment() const {
@@ -436,7 +438,7 @@ class FileSystemSegmentedFile {
       // First segment opened.
       void* buffer = std::malloc(bundle_t::size(1));
       bundle_t* new_files = new(buffer) bundle_t(filename_, file_options_, handler_,
-                                                segment, segment + 1, kSegmentSize);
+                                                segment, segment + 1, SEGMENT_SIZE);
       files_.store(new_files);
       return core::Status::Ok;
     }
@@ -446,7 +448,7 @@ class FileSystemSegmentedFile {
     uint64_t new_end_segment = std::max(files->end_segment, segment + 1);
     void* buffer = std::malloc(bundle_t::size(new_end_segment - new_begin_segment));
     bundle_t* new_files = new(buffer) bundle_t(handler_, new_begin_segment, new_end_segment,
-                                              *files, kSegmentSize);
+                                              *files, SEGMENT_SIZE);
     files_.store(new_files);
     // Delete the old list only after all threads have finished looking at it.
     Context context{ files };
@@ -496,7 +498,7 @@ class FileSystemSegmentedFile {
       }
       std::free(context->files);
       if(context->caller_callback) {
-        context->caller_callback(context->new_begin_segment * kSegmentSize);
+        context->caller_callback(context->new_begin_segment * SEGMENT_SIZE);
       }
     };
 
@@ -507,7 +509,7 @@ class FileSystemSegmentedFile {
     if(files->begin_segment >= new_begin_segment) {
       // Segments have already been truncated.
       if(caller_callback) {
-        caller_callback(files->begin_segment * kSegmentSize);
+        caller_callback(files->begin_segment * SEGMENT_SIZE);
       }
       return;
     }
@@ -515,7 +517,7 @@ class FileSystemSegmentedFile {
     // Make a copy of the list, excluding the files to be truncated.
     void* buffer = std::malloc(bundle_t::size(files->end_segment - new_begin_segment));
     bundle_t* new_files = new(buffer) bundle_t(handler_, new_begin_segment, files->end_segment,
-                                               *files, kSegmentSize);
+                                               *files, SEGMENT_SIZE);
     files_.store(new_files);
     // Delete the old list only after all threads have finished looking at it.
     Context context{ files, new_begin_segment, caller_callback };
