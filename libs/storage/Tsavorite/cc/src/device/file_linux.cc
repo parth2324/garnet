@@ -299,12 +299,7 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
   std::cout << "reading " <<  length << " at " << offset << " from memory\n";
   // std::cout << "total reads in bytes: " <<  num_r << "\n";
   try {
-    if(length > 512){
-      std::memcpy(buffer + (size_t)512, segment_ptr + offset, 512);
-      std::memcpy(buffer, segment_ptr + (size_t)(offset + 512), 512);
-      std::cout << "did two\n";
-    }
-    else std::memcpy(buffer, segment_ptr + offset, length);
+    std::memcpy(buffer, segment_ptr + offset, length);
   } catch(...)
     {
         std::exception_ptr p = std::current_exception();
