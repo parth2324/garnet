@@ -75,7 +75,7 @@ class FileSystemFile {
   }
 
   core::Status ReadAsync(uint64_t source, void* dest, uint32_t length,
-                   core::AsyncIOCallback callback, core::IAsyncContext& context) const {
+                   core::AsyncIOCallback callback, core::IAsyncContext& context) {
     return file_.Read(source, length, reinterpret_cast<uint8_t*>(dest), context, callback);
   }
   core::Status WriteAsync(const void* source, uint64_t dest, uint32_t length,
