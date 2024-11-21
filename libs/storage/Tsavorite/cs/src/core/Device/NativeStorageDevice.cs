@@ -181,7 +181,8 @@ namespace Tsavorite.core
                 throw new TsavoriteException("Native storage device does not support segment sizes greater than 1GB");
             Console.WriteLine("NATIVE STORAGE DEVICE INIT:");
             Console.WriteLine(FileName, segmentSize);
-            NativeDevice_ResizeSegment(nativeDevice, segmentSize);
+            // resizing segments
+            NativeDevice_ResizeSegment(nativeDevice, (ulong)segmentSize);
             base.Initialize(segmentSize, epoch, omitSegmentIdFromFilename);
         }
 
