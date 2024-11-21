@@ -231,26 +231,30 @@ Status QueueFile::ScheduleOperation(FileOperationType operationType, uint8_t* bu
 #ifdef MEM_IDEV
 
 bool LocalMemoryIoHandler::TryComplete() {
-  return false;
+  return false;   // try true
 }
 
 int LocalMemoryIoHandler::QueueRun(int timeout_secs) {
-  return 0;
+  return 0;       // try returning number of proceesed so far
 }
 
 Status LocalMemory::Close() {
+  std::cout << "segment close called\n";
   if(segment_ptr){
     std::free(segment_ptr);
     segment_ptr = nullptr;
   }
+  std::cout << "close success\n";
   return Status::Ok;
 }
 
 Status LocalMemory::Delete() {
+  std::cout << "segment delete called\n";
   if(segment_ptr){
     std::free(segment_ptr);
     segment_ptr = nullptr;
   }
+  std::cout << "delete success\n";
   return core::Status::Ok;
 }
 
@@ -259,17 +263,16 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
   if(exists) {
     *exists = false;
   }
+  std::cout << "segment open called\n";
   segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * kSegmentSize);
   if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
   else segment_size = kSegmentSize;
-  std::cout << "new segment open called\n";
+  std::cout << "open success\n";
   return Status::Ok;
 }
 
 Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) {
-  callback(&context, Status::Ok, length);
-  return Status::Ok;
   DCHECK_ALIGNMENT(offset, length, buffer);
   num_r += (uint64_t)length;
   std::cout << "reading " <<  length << " at " << offset << " from memory\n";
