@@ -355,7 +355,7 @@ class FileSystemSegmentedFile {
     bundle_t* files = files_.load();
 
     if(!files || !files->exists(segment)) {
-      core::Status result = const_cast<FileSystemSegmentedFile<H, S>*>(this)->OpenSegment(segment);
+      core::Status result = const_cast<FileSystemSegmentedFile<H>*>(this)->OpenSegment(segment);
       if(result != core::Status::Ok) {
         return result;
       }
@@ -595,7 +595,7 @@ class FileSystemDisk {
  public:
   typedef H handler_t;
   typedef FileSystemFile<handler_t> file_t;
-  typedef FileSystemSegmentedFile<handler_t, S> log_file_t;
+  typedef FileSystemSegmentedFile<handler_t> log_file_t;
 
  private:
   static std::string NormalizePath(std::string root_path) {
