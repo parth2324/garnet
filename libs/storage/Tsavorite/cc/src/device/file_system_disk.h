@@ -255,8 +255,6 @@ class FileSystemSegmentedFile {
   typedef FileSystemFile<H> file_t;
   typedef FileSystemSegmentBundle<handler_t> bundle_t;
 
-  static_assert(core::Utility::IsPowerOfTwo(SEGMENT_SIZE), "template parameter S is not a power of two!");
-
   FileSystemSegmentedFile(const std::string& filename,
                           const environment::FileOptions& file_options, core::LightEpoch* epoch)
     : begin_segment_{ 0 }
@@ -265,6 +263,7 @@ class FileSystemSegmentedFile {
     , filename_{ filename }
     , file_options_{ file_options }
     , epoch_{ epoch } {
+      assert(core::Utility::IsPowerOfTwo(SEGMENT_SIZE));
   }
 
   ~FileSystemSegmentedFile() {
@@ -294,6 +293,7 @@ class FileSystemSegmentedFile {
       TruncateSegments(segment + 1, truncate_callback);
   }
   void ResizeSegments(uint64_t segment_size) {
+    assert(core::Utility::IsPowerOfTwo(segment_size));
     class Context : public core::IAsyncContext {
     public:
         Context(bundle_t* files_)
