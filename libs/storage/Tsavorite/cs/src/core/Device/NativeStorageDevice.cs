@@ -216,7 +216,6 @@ namespace Tsavorite.core
                 {
                     throw new IOException("Error reading from log file", _result);
                 }
-                Console.WriteLine("MADE IT OUT IN C# ASYNC READ.");
             }
             catch (IOException e)
             {
