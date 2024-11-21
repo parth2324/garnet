@@ -21,6 +21,9 @@
 namespace FASTER {
 namespace device {
 
+#define MEMORY_PER_SEGMENT_SIZE_MB 256
+static uint64_t SEGMENT_SIZE = MEMORY_PER_SEGMENT_SIZE_MB * 1048576L;
+
 template <class H, uint64_t S>
 class FileSystemDisk;
 
@@ -244,9 +247,6 @@ class FileSystemSegmentBundle {
   environment::FileOptions file_options_;
   bool owner_;
 };
-
-#define MEMORY_PER_SEGMENT_SIZE_MB 256
-static uint64_t SEGMENT_SIZE = MEMORY_PER_SEGMENT_SIZE_MB * 1048576L;
 
 template <class H>
 class FileSystemSegmentedFile {
