@@ -252,7 +252,7 @@ class FileSystemSegmentedFile {
   typedef FileSystemFile<H> file_t;
   typedef FileSystemSegmentBundle<handler_t> bundle_t;
 
-  static constexpr uint64_t kSegmentSize = S;
+  static uint64_t kSegmentSize = S;
   static_assert(core::Utility::IsPowerOfTwo(S), "template parameter S is not a power of two!");
 
   FileSystemSegmentedFile(const std::string& filename,
@@ -291,7 +291,7 @@ class FileSystemSegmentedFile {
           };
       TruncateSegments(segment + 1, truncate_callback);
   }
-  void ResizeSegments(uint64_t segment_size) {
+  void ResizeSegments(const uint64_t segment_size) {
     class Context : public core::IAsyncContext {
     public:
         Context(bundle_t* files_)
@@ -314,7 +314,7 @@ class FileSystemSegmentedFile {
         core::CallbackContext<Context> context{ ctxt };
         for (uint64_t idx = context->files->begin_segment; idx < context->files->end_segment; ++idx) {
             file_t& file = context->files->file(idx);
-            file.ResizeSegment()
+            file.ResizeSegment(segment_size);
         }
         std::free(context->files);
         };
