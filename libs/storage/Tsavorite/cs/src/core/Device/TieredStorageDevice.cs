@@ -60,9 +60,13 @@ namespace Tsavorite.core
         {
             base.Initialize(segmentSize, epoch, omitSegmentIdFromFileName);
 
-            foreach (IDevice devices in devices)
+            Console.WriteLine("TIERED STORAGE DEVICE INIT:");
+            Console.WriteLine(libraryName);
+
+            foreach (IDevice device in devices)
             {
-                devices.Initialize(segmentSize, epoch);
+                device.Initialize(segmentSize, epoch);
+                Console.WriteLine(device.FileName, device.StartSegment, device.EndSegment, device.SegmentSize, device.Capacity);
             }
         }
 

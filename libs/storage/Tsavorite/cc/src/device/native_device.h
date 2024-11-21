@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING 1;
-#define MEMORY_PER_SEGMENT_SIZE_MB 4096
+#define MEMORY_PER_SEGMENT_SIZE_MB 256
 #include <iostream>
 #include "file_system_disk.h"  
 
