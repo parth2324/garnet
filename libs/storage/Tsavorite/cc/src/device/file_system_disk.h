@@ -294,6 +294,7 @@ class FileSystemSegmentedFile {
   }
   void ResizeSegments(uint64_t segment_size) {
     assert(core::Utility::IsPowerOfTwo(segment_size));
+    std::cout << "resize was called in FSD\n";
     class Context : public core::IAsyncContext {
     public:
         Context(bundle_t* files_)
