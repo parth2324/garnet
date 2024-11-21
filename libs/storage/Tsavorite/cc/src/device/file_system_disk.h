@@ -349,7 +349,7 @@ class FileSystemSegmentedFile {
   core::Status ReadAsync(uint64_t source, void* dest, uint32_t length, core::AsyncIOCallback callback,
                    core::IAsyncContext& context) const {
     uint64_t segment = source / SEGMENT_SIZE;
-    // std::cout << source % SEGMENT_SIZE << " " << length << " " << SEGMENT_SIZE << "\n";
+    std::cout << "CHK: " << source % SEGMENT_SIZE << " " << length << " " << SEGMENT_SIZE << "\n";
     assert(source % SEGMENT_SIZE + length <= SEGMENT_SIZE);
 
     bundle_t* files = files_.load();
