@@ -61,7 +61,6 @@ namespace Tsavorite.core
             base.Initialize(segmentSize, epoch, omitSegmentIdFromFileName);
 
             Console.WriteLine("TIERED STORAGE DEVICE INIT:");
-            Console.WriteLine(libraryName);
 
             foreach (IDevice device in devices)
             {
