@@ -268,6 +268,7 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
 
 Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) {
+  return Status::Ok;
   DCHECK_ALIGNMENT(offset, length, buffer);
   num_r += (uint64_t)length;
   std::cout << "reading " <<  length << " at " << offset << " from memory\n";
