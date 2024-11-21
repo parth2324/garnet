@@ -165,10 +165,12 @@ namespace Tsavorite.core
         public override void Initialize(long segmentSize, LightEpoch epoch, bool omitSegmentIdFromFilename = false)
         {
             base.Initialize(segmentSize, epoch, omitSegmentIdFromFilename);
+            Console.WriteLine("SHARED STORAGE DEVICE INIT:");
 
             for (int i = 0; i < partitions.Devices.Count; i++)
             {
                 partitions.Devices[i].Initialize(partitions.MapSectorSize(segmentSize, 0), epoch);
+                Console.WriteLine(partitions.Devices[i].FileName, partitions.Devices[i].StartSegment, partitions.Devices[i].EndSegment, partitions.Devices[i].SegmentSize, partitions.Devices[i].Capacity);
             }
         }
 

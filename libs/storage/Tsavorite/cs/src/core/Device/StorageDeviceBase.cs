@@ -103,6 +103,7 @@ namespace Tsavorite.core
         /// <param name="omitSegmentIdFromFilename"></param>
         public virtual void Initialize(long segmentSize, LightEpoch epoch = null, bool omitSegmentIdFromFilename = false)
         {
+            Console.WriteLine("STORAGE DEVICE BASE INIT CALLED.");
             if (segmentSize != -1)
             {
                 if (Capacity != -1 && Capacity % segmentSize != 0)
