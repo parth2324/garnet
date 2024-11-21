@@ -364,7 +364,7 @@ class LocalMemory {
   core::Status Open(FileCreateDisposition create_disposition, const FileOptions& options,
               LocalMemoryIoHandler* handler, uint64_t kSegmentSize, bool* exists = nullptr);
   core::Status Read(size_t offset, uint32_t length, uint8_t* buffer,
-                    core::IAsyncContext& context, core::AsyncIOCallback callback) const;
+                    core::IAsyncContext& context, core::AsyncIOCallback callback);
   core::Status Write(size_t offset, uint32_t length, const uint8_t* buffer,
                      core::IAsyncContext& context, core::AsyncIOCallback callback);
   core::Status Delete();
