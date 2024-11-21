@@ -274,15 +274,17 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
   // std::cout << "total reads in bytes: " <<  num_r << "\n";
   try {
   std::memcpy(buffer, segment_ptr + offset, length);
-  } catch (const exception& e1) {
-        // print the exception
-        cout << "MEM Exception " << e1.what() << "\n";
+  } catch(...)
+    {
+        std::exception_ptr p = std::current_exception();
+        std::cout << "MEM EXCEPTION: " << (p ? p.__cxa_exception_type()->name() : "null") << std::endl;
     }
   try{
   callback(&context, Status::Ok, length);
-  } catch (const exception& e2) {
-        // print the exception
-        cout << "CALL Exception " << e2.what() << "\n";
+  } catch(...)
+    {
+        std::exception_ptr p = std::current_exception();
+        std::cout << "CALLBACK EXCEPTION: " << (p ? p.__cxa_exception_type()->name() : "null") << std::endl;
     }
   return Status::Ok;
 }
