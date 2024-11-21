@@ -269,7 +269,9 @@ Status LocalMemory::Open(FileCreateDisposition create_disposition, const FileOpt
 Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) const {
   DCHECK_ALIGNMENT(offset, length, buffer);
+  num_r += (uint64_t)length;
   std::cout << "reading " <<  length << " at " << offset << " from memory\n";
+  std::cout << "total reads in bytes: " <<  num_r << "\n";
   std::memcpy(buffer, segment_ptr + offset, length);
   callback(&context, Status::Ok, length);
   return Status::Ok;
@@ -278,7 +280,9 @@ Status LocalMemory::Read(size_t offset, uint32_t length, uint8_t* buffer,
 Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   DCHECK_ALIGNMENT(offset, length, buffer);
+  num_w += (uint64_t)length;
   // std::cout << "writing " <<  length << " at " << offset << " to memory\n";
+  std::cout << "total writes in bytes: " <<  num_w << "\n";
   std::memcpy(segment_ptr + offset, buffer, length);
   callback(&context, Status::Ok, length);
   return Status::Ok;

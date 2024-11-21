@@ -299,6 +299,8 @@ class LocalMemory {
     // , capacity{ (uint64_t)(-1) }
     , segment_size{ 0 }
     , sector_size{ 1 }
+    , num_r { 0 }
+    , num_w { 0 }
     , segment_ptr{ nullptr } {
   }
   LocalMemory(const std::string& virtfilename_)
@@ -306,6 +308,8 @@ class LocalMemory {
     // , capacity{ (uint64_t)(-1) }
     , segment_size{ 0 }
     , sector_size{ 1 }
+    , num_r { 0 }
+    , num_w { 0 }
     , segment_ptr{ nullptr } {
       // segment_ptr = (uint8_t*)std::malloc(sizeof(uint8_t) * segment_size);
       // if(!segment_ptr) throw std::runtime_error("local memory exhausted.");
@@ -367,7 +371,7 @@ class LocalMemory {
 
  protected:
   // uint64_t capacity;
-  uint64_t segment_size, sector_size;
+  uint64_t segment_size, sector_size, num_r, num_w;
   std::string virtfilename;
 };
 
