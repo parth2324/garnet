@@ -189,7 +189,7 @@ Status QueueFile::ResizeSegment(uint64_t _segment_size){
 Status QueueFile::Read(size_t offset, uint32_t length, uint8_t* buffer,
                        IAsyncContext& context, AsyncIOCallback callback) const {
   DCHECK_ALIGNMENT(offset, length, buffer);
-  printf("Read at %d offset for %d length.\n", offset, length);
+  if(length > 1024) printf("Read at %d offset for %d length.\n", offset, length);
 #ifdef IO_STATISTICS
   ++read_count_;
   bytes_read_ += length;
@@ -201,7 +201,7 @@ Status QueueFile::Read(size_t offset, uint32_t length, uint8_t* buffer,
 Status QueueFile::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   DCHECK_ALIGNMENT(offset, length, buffer);
-  printf("Write at %d offset for %d length.\n", offset, length);
+  if(length > 1024) printf("Write at %d offset for %d length.\n", offset, length);
 #ifdef IO_STATISTICS
   bytes_written_ += length;
 #endif
