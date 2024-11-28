@@ -326,7 +326,7 @@ Status LocalMemory::Write(size_t offset, uint32_t length, const uint8_t* buffer,
                         IAsyncContext& context, AsyncIOCallback callback) {
   DCHECK_ALIGNMENT(offset, length, buffer);
   num_w += (uint64_t)length;
-  // std::cout << "writing " <<  length << " at " << offset << " to memory\n";
+  std::cout << "writing " <<  length << " at " << offset << " to memory\n";
   // std::cout << "total writes in bytes: " <<  num_w << "\n";
   std::memcpy(segment_ptr + offset, buffer, length);
   callback(&context, Status::Ok, length);
